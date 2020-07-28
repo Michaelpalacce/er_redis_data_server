@@ -4,14 +4,21 @@
   "description": "A redis data store for event_request",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+	"test": "nyc --reporter=lcov --reporter=text-summary node ./tests/redis_data_server_test.js",
+	"deploy": "npm run test && npm publish"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Michaelpalacce/er_redis_data_server.git"
   },
+  "keywords": [
+	"redis",
+	"event-request",
+	"data-store",
+	"data-server"
+  ],
   "author": "Stefan Genov",
-  "license": "ISC",
+  "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/Michaelpalacce/er_redis_data_server/issues"
   },
@@ -19,5 +26,8 @@
   "dependencies": {
     "event_request": "^26.0.9",
     "redis": "^3.0.2"
+  },
+  "devDependencies": {
+    "nyc": "^15.1.0"
   }
 }

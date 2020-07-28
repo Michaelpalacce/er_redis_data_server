@@ -1,0 +1,15 @@
+name: codacy-coverage-reporter
+
+on: ["push"]
+
+jobs:
+  codacy-coverage-reporter:
+    runs-on: ubuntu-latest
+    name: codacy-coverage-reporter
+    steps:
+      - uses: actions/checkout@master
+      - name: Run codacy-coverage-reporter
+        uses: codacy/codacy-coverage-reporter-action@master
+        with:
+          project-token: d0981376ba934314a926a377da3f8a2b
+          coverage-reports: coverage/lcov.info

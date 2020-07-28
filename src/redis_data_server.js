@@ -3,8 +3,9 @@
 const DataServer				= require( 'event_request/server/components/caching/data_server' );
 const redis						= require( 'redis' );
 
-const MAX_TTL					= 9223372036854775295;
+const MAX_TTL					= 2147483647;
 const DEFAULT_TTL				= 300;
+const PREFIX					= '#$OBJ$#';
 
 /**
  * @brief	Data server that stores data in a local or remote redis instance
@@ -19,6 +20,7 @@ class RedisDataServer extends DataServer
 		this.clientSettings		= typeof options.clientSettings === 'object'
 								? options.clientSettings
 								: {};
+
 		this.defaultTtl			= typeof options.ttl === 'number'
 								? options.ttl
 								: DEFAULT_TTL;
@@ -47,6 +49,9 @@ class RedisDataServer extends DataServer
 				if ( err )
 					reject( err );
 
+				if ( typeof response === 'string' && response.indexOf( PREFIX ) !== -1 )
+					response	= JSON.parse( response.slice( PREFIX.length ) );
+
 				resolve( response );
 			});
 		});
@@ -57,8 +62,13 @@ class RedisDataServer extends DataServer
 	 */
 	async _set( key, value, ttl, options )
 	{
+		let valueToSet	= value;
+
+		if ( typeof value === 'object' )
+			valueToSet	= PREFIX + JSON.stringify( value );
+
 		return new Promise(( resolve, reject ) => {
-			this.server.set( key, value, 'EX', this._getTtl( ttl ), ( error ) => {
+			this.server.set( key, valueToSet, 'EX', this._getTtl( ttl ), ( error ) => {
 					/* istanbul ignore next */
 					if ( error )
 						reject( error );
@@ -80,7 +90,7 @@ class RedisDataServer extends DataServer
 					if ( error )
 						reject( error );
 
-					resolve( response === 1 );
+					resolve( true );
 				}
 			);
 		});

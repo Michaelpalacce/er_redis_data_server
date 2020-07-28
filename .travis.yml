@@ -1,0 +1,19 @@
+os:
+  - linux
+
+language: node_js
+node_js:
+  - 12
+
+services:
+  - redis
+
+before_install:
+  - npm install
+  - pip install --user codecov
+
+after_success:
+  - codecov --file coverage/lcov.info --disable search
+
+env:
+  - CODECOV_TOKEN=9bed550d-4a2b-4567-a0a5-7d6e57715859
