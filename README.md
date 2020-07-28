@@ -1,7 +1,7 @@
 # er_redis_data_server
 Redis data server plugin for EventRequest
 
-[![Build Status](https://travis-ci.com/Michaelpalacce/er_redis_data_server.svg?branch=master)](https://travis-ci.com/Michaelpalacce/er_redis_data_server) [![codecov](https://codecov.io/gh/Michaelpalacce/er_redis_data_server/branch/master/graph/badge.svg)](https://codecov.io/gh/Michaelpalacce/er_redis_data_server) [![codecov](https://codecov.io/gh/Michaelpalacce/er_redis_data_server/branch/master/graph/badge.svg)](https://codecov.io/gh/Michaelpalacce/er_redis_data_server) 
+[![Build Status](https://travis-ci.com/Michaelpalacce/er_redis_data_server.svg?branch=master)](https://travis-ci.com/Michaelpalacce/er_redis_data_server) [![codecov](https://codecov.io/gh/Michaelpalacce/er_redis_data_server/branch/master/graph/badge.svg)](https://codecov.io/gh/Michaelpalacce/er_redis_data_server) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/838fd14c49a849e89ce27febd56ef95e)](https://www.codacy.com/manual/Michaelpalacce/er_redis_data_server?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Michaelpalacce/er_redis_data_server&amp;utm_campaign=Badge_Grade)
 
 
 Plugin for event_request that implements a redis data server

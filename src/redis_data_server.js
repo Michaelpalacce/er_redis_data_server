@@ -162,7 +162,7 @@ class RedisDataServer extends DataServer
 					if ( error )
 						reject( error );
 
-					resolve( result === 1 )
+					resolve( result === 1 );
 				}
 			);
 		});
