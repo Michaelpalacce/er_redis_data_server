@@ -19,7 +19,7 @@ Loggur.loggers	= {};
 app.apply( getPlugin() );
 
 dataServer.server.flushall( function () {
-	app.Loggur.log( arguments );
+	console.log( arguments );
 });
 
 /**
