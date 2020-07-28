@@ -15,9 +15,9 @@ Plugin for event_request that implements a redis data server
 // Get the data server only
 const RedisDataServer = require( 'er_redis_data_server' );
 
-// Get the plugin that you can attach instead of the default one
-const { App } = require( 'event_request' );
-const app = App();
+const DataServerPlugin = require( 'event_request/server/plugins/available_plugins/data_server_plugin' );
+const app = require( 'event_request' )();
 
-app.apply( RedisDataServer.getPlugin() );
+// Attach the cache server
+app.apply( new DataServerPlugin( 'er_data_server', { dataServer: new RedisDataServer() } ) );
 ~~~

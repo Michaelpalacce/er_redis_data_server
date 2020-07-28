@@ -1,6 +1,6 @@
 {
   "name": "er_redis_data_server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A redis data store for event_request",
   "main": "index.js",
   "scripts": {

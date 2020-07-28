@@ -8,7 +8,7 @@ const Session						= require( 'event_request/server/components/session/session' 
 const path							= require( 'path' );
 
 const RedisDataServer				= require( '../src/redis_data_server' );
-const getPlugin						= require( '../src/redis_data_server_plugin' );
+const DataServerPlugin				= require( 'event_request/server/plugins/available_plugins/data_server_plugin' );
 
 const app							= new Server();
 const dataServer					= new RedisDataServer();
@@ -16,7 +16,7 @@ const dataServer					= new RedisDataServer();
 Loggur.disableDefault();
 Loggur.loggers	= {};
 
-app.apply( getPlugin() );
+app.apply( new DataServerPlugin( 'er_data_server', { dataServer } ) );
 
 dataServer.server.flushall( function () {
 	console.log( arguments );
@@ -304,7 +304,7 @@ test({
 		const key	= `${name}${Math.random()}`;
 		const value	= 'test';
 
-		app.apply( getPlugin() );
+		app.apply( new DataServerPlugin( 'er_data_server', { dataServer } ) );
 
 		app.get( name, async ( event ) => {
 			assert.equal( event.dataServer instanceof RedisDataServer, true );
