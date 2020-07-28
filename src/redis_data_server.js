@@ -4,6 +4,7 @@ const DataServer				= require( 'event_request/server/components/caching/data_ser
 const redis						= require( 'redis' );
 
 const MAX_TTL					= 9223372036854775295;
+const DEFAULT_TTL				= 300;
 
 /**
  * @brief	Data server that stores data in a local or remote redis instance
@@ -18,6 +19,11 @@ class RedisDataServer extends DataServer
 		this.clientSettings		= typeof options.clientSettings === 'object'
 								? options.clientSettings
 								: {};
+		this.defaultTtl			= typeof options.ttl === 'number'
+								? options.ttl
+								: DEFAULT_TTL;
+
+		this.defaultTtl			= this.defaultTtl === -1 ? MAX_TTL : this.defaultTtl;
 
 		this.server				= redis.createClient( this.clientSettings );
 	}
@@ -27,8 +33,7 @@ class RedisDataServer extends DataServer
 	 */
 	_stop()
 	{
-		/* istanbul ignore next */
-		this.server.end(() => {});
+		this.server.end( true );
 	}
 
 	/**
@@ -42,7 +47,7 @@ class RedisDataServer extends DataServer
 				if ( err )
 					reject( err );
 
-				resolve( typeof response !== 'undefined' ? response : null );
+				resolve( response );
 			});
 		});
 	}
@@ -53,7 +58,7 @@ class RedisDataServer extends DataServer
 	async _set( key, value, ttl, options )
 	{
 		return new Promise(( resolve, reject ) => {
-			this.server.set( key, value, this._getTtl( ttl ), ( error ) => {
+			this.server.set( key, value, 'EX', this._getTtl( ttl ), ( error ) => {
 					/* istanbul ignore next */
 					if ( error )
 						reject( error );
@@ -70,12 +75,12 @@ class RedisDataServer extends DataServer
 	async _delete( key, options )
 	{
 		return new Promise(( resolve, reject ) => {
-			this.server.del( key, ( error ) => {
+			this.server.del( key, ( error, response ) => {
 					/* istanbul ignore next */
 					if ( error )
 						reject( error );
 
-					resolve( true );
+					resolve( response === 1 );
 				}
 			);
 		});
@@ -87,14 +92,14 @@ class RedisDataServer extends DataServer
 	async _increment( key, value, options )
 	{
 		return new Promise(( resolve, reject ) => {
-			this.server.incr( key, value, ( error, result ) => {
+			this.server.incrby( key, value, ( error, result ) => {
 					if ( error )
 						resolve( false );
 
-					if ( result === false || result === undefined )
+					if ( result === undefined )
 						resolve( false );
 
-					resolve( result );
+					resolve( true );
 				}
 			);
 		});
@@ -106,14 +111,14 @@ class RedisDataServer extends DataServer
 	async _decrement( key, value, options )
 	{
 		return new Promise(( resolve, reject ) => {
-			this.server.decr( key, value, ( error, result ) => {
-					if ( error )
-						resolve( false );
+			this.server.decrby( key, value, ( error, result ) => {
+				if ( error )
+					resolve( false );
 
-					if ( result === false || result === undefined )
-						resolve( false );
+				if ( result === undefined )
+					resolve( false );
 
-					resolve( result );
+				resolve( true );
 				}
 			);
 		});
@@ -125,15 +130,12 @@ class RedisDataServer extends DataServer
 	async _touch( key, ttl, options )
 	{
 		return new Promise(( resolve, reject ) => {
-			this.server.touch( key, this._getTtl( ttl ), ( error, result ) => {
+			this.server.expire( key, this._getTtl( ttl ), ( error, result ) => {
 					/* istanbul ignore next */
 					if ( error )
 						reject( error );
 
-					if ( result === false )
-						resolve( false );
-
-					resolve( result );
+					resolve( result === 1 );
 				}
 			);
 		});
@@ -144,11 +146,15 @@ class RedisDataServer extends DataServer
 	 */
 	async _lock( key, options )
 	{
-		const promisify	= require( 'util' ).promisify;
-		const serverAdd	= promisify( this.server.add.bind( this.server ) );
+		return new Promise(( resolve, reject ) => {
+			this.server.setnx( key, DataServer.LOCK_VALUE, ( error, result ) => {
+					/* istanbul ignore next */
+					if ( error )
+						reject( error );
 
-		return await serverAdd( key, DataServer.LOCK_VALUE, MAX_TTL ).catch(() => {
-			return false;
+					resolve( result === 1 )
+				}
+			);
 		});
 	}
 
@@ -157,12 +163,7 @@ class RedisDataServer extends DataServer
 	 */
 	async _unlock( key, options )
 	{
-		const promisify	= require( 'util' ).promisify;
-		const serverDel	= promisify( this.server.del.bind( this.server ) );
-
-		await serverDel( key );
-
-		return true;
+		return await this._delete( key, options );
 	}
 
 	/**
