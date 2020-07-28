@@ -599,6 +599,7 @@ test({
 
 test({
 	message	: 'RedisDataServer.testWithServerRateLimits',
+	skipped	: true,
 	test	: async ( done ) => {
 		const dataStore	= new RedisDataServer();
 
