@@ -566,7 +566,6 @@ test({
 test({
 	message			: 'RedisDataServer.lockBurst acquires another lock with burst of locks',
 	test			: ( done )=>{
-
 		setTimeout( async ()=>{
 			const dataServer	= new RedisDataServer();
 			const promises		= [];
@@ -588,9 +587,7 @@ test({
 						acquiredLocks ++;
 				}
 
-				// Variable since there is a slight change of a race condition that is due to memcached
 				assert.equal( acquiredLocks === 100, true );
-
 
 				done();
 			}).catch( done );
