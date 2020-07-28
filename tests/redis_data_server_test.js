@@ -599,7 +599,6 @@ test({
 
 test({
 	message	: 'RedisDataServer.testWithServerRateLimits',
-	skipped	: true,
 	test	: async ( done ) => {
 		const dataStore	= new RedisDataServer();
 
@@ -742,6 +741,7 @@ test({
 
 test({
 	message	: 'RedisDataServer.testWithServerRateLimitsStrictSTRESS',
+	skipped	: true,
 	test	: ( done ) => {
 		// This test runs locally easily, but does not work well in the travis env
 		const name			= 'testErRateLimitsWithStrictPolicyStress';
