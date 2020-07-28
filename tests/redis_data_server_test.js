@@ -36,7 +36,7 @@ dataServer.server.flushall( function () {
  */
 function sendServerRequest( path, method = 'GET', statusCode = 200, data = '', headers = {}, port = 3333, expectedBody = null )
 {
-	return new Promise(( resolve,reject )=>{
+	return new Promise(( resolve,reject ) => {
 		const predefinedHeaders	= {
 			'Content-Type': 'application/x-www-form-urlencoded',
 			'Content-Length': Buffer.byteLength( data )
@@ -52,13 +52,13 @@ function sendServerRequest( path, method = 'GET', statusCode = 200, data = '', h
 			headers
 		};
 
-		const req	= request( options, ( res ) =>{
+		const req	= request( options, ( res ) => {
 			const bodyParts	= [];
-			res.on( 'data',( chunk )=>{
+			res.on( 'data',( chunk ) => {
 				bodyParts.push( chunk );
 			} );
 
-			res.on( 'end',()=>{
+			res.on( 'end',() => {
 				res.body	= Buffer.concat( bodyParts );
 
 				if ( res.statusCode !== statusCode )
@@ -86,9 +86,9 @@ function sendServerRequest( path, method = 'GET', statusCode = 200, data = '', h
 
 test({
 	message	: 'RedisDataServer.set sets data',
-	test	: ( done )=>{
+	test	: ( done ) => {
 
-		setTimeout( async ()=>{
+		setTimeout( async () => {
 			const dataServer	= new RedisDataServer();
 			const key			= `key${Math.random()}`;
 			const value			= 'value';
@@ -110,9 +110,9 @@ test({
 
 test({
 	message	: 'RedisDataServer.set.sets.data.twice',
-	test	: ( done )=>{
+	test	: ( done ) => {
 
-		setTimeout( async ()=>{
+		setTimeout( async () => {
 			const dataServer	= new RedisDataServer();
 			const key			= `key${Math.random()}`;
 			const value			= 'value';
@@ -135,7 +135,7 @@ test({
 
 test({
 	message	: 'RedisDataServer.set sets data without options',
-	test	: async ( done )=>{
+	test	: async ( done ) => {
 		const dataServer	= new RedisDataServer();
 		const key			= `key${Math.random()}`
 		const value			= 'value';
@@ -154,7 +154,7 @@ test({
 
 test({
 	message	: 'RedisDataServer.set with ttl === -1',
-	test	: async ( done )=>{
+	test	: async ( done ) => {
 		const dataServer	= new RedisDataServer();
 		const key			= `key${Math.random()}`
 		const value			= 'value';
@@ -183,7 +183,7 @@ test({
 		[`key${Math.random()}`, 'value', false, {}],
 		[`key${Math.random()}`, 'value', {}, {}],
 	],
-	test			: async ( done, key, value, ttl, options )=>{
+	test			: async ( done, key, value, ttl, options ) => {
 		const dataServer	= new RedisDataServer();
 
 		assert.equal( await dataServer.set( key, value, ttl, options ), null );
@@ -195,7 +195,7 @@ test({
 
 test({
 	message	: 'RedisDataServer.get gets data',
-	test	: async ( done )=>{
+	test	: async ( done ) => {
 		const dataServer	= new RedisDataServer();
 		const key			= `key${Math.random()}`;
 		const value			= 'value';
@@ -212,7 +212,7 @@ test({
 
 test({
 	message	: 'RedisDataServer.get.when.data.does.not.exist',
-	test	: async ( done )=>{
+	test	: async ( done ) => {
 		const dataServer	= new RedisDataServer();
 		const dataSet		= await dataServer.get( 'test' );
 
@@ -234,7 +234,7 @@ test({
 		[[], {}],
 		[{}, {}],
 	],
-	test			: async ( done, key, options )=>{
+	test			: async ( done, key, options ) => {
 		const dataServer	= new RedisDataServer();
 
 		assert.equal( await dataServer.get( key, options ), null );
@@ -245,7 +245,7 @@ test({
 
 test({
 	message	: 'RedisDataServer.get prunes ( when expired it will be null )',
-	test	: async ( done )=>{
+	test	: async ( done ) => {
 		const dataServer	= new RedisDataServer();
 		const key			= `key${Math.random()}`;
 		const value			= 'value';
@@ -254,7 +254,7 @@ test({
 
 		await dataServer.set( key, value, ttl, { persist } );
 
-		setTimeout( async ()=>{
+		setTimeout( async () => {
 			assert.equal( await dataServer.get( key ), null );
 
 			done();
@@ -264,7 +264,7 @@ test({
 
 test({
 	message	: 'RedisDataServer.touch.updates.expirationDate',
-	test	: async ( done )=>{
+	test	: async ( done ) => {
 		const dataServer	= new RedisDataServer();
 		const key			= `key${Math.random()}`;
 		const value			= 'value';
@@ -274,7 +274,7 @@ test({
 		await dataServer.set( key, value, ttl, { persist } );
 		await dataServer.touch( key, 5 );
 
-		setTimeout( async()=>{
+		setTimeout( async() => {
 			const dataSet	= await dataServer.get( key );
 
 			assert.equal( dataSet, value );
@@ -286,7 +286,7 @@ test({
 
 test({
 	message	: 'RedisDataServer.touch.if.data.does.not.exist',
-	test	: async ( done )=>{
+	test	: async ( done ) => {
 		const dataServer	= new RedisDataServer();
 		const key			= `key${Math.random()}`;
 
@@ -298,7 +298,7 @@ test({
 
 test({
 	message	: 'RedisDataServer.testWithServerAttachesSuccessfully',
-	test	: ( done )=>{
+	test	: ( done ) => {
 		const app	= new Server();
 		const name	= '/testWithServerAttachesSuccessfully';
 		const key	= `${name}${Math.random()}`;
@@ -306,7 +306,7 @@ test({
 
 		app.apply( getPlugin() );
 
-		app.get( name, async ( event )=>{
+		app.get( name, async ( event ) => {
 			assert.equal( event.dataServer instanceof RedisDataServer, true );
 
 			await event.dataServer.set( key, value );
@@ -314,7 +314,7 @@ test({
 			event.send( name );
 		});
 
-		app.get( `${name}GET`, async ( event )=>{
+		app.get( `${name}GET`, async ( event ) => {
 			assert.equal( event.dataServer instanceof RedisDataServer, true );
 
 			assert.equal( await event.dataServer.get( key ), value );
@@ -322,12 +322,12 @@ test({
 			event.send( `${name}GET` );
 		});
 
-		app.listen( 3334, ()=>{
-			sendServerRequest( name, 'GET', 200, '', {}, 3334 ).then(( response )=>{
+		app.listen( 3334, () => {
+			sendServerRequest( name, 'GET', 200, '', {}, 3334 ).then(( response ) => {
 				assert.equal( response.body.toString(), name );
 
 				return sendServerRequest( `${name}GET`, 'GET', 200, '', {}, 3334 );
-			}).then(( response )=>{
+			}).then(( response ) => {
 				assert.equal( response.body.toString(), `${name}GET` );
 
 				done();
@@ -353,9 +353,9 @@ test({
 		['key', null, 'string'],
 		['key', null, false]
 	],
-	test			: ( done, key, ttl, options )=>{
+	test			: ( done, key, ttl, options ) => {
 
-		setTimeout( async ()=>{
+		setTimeout( async () => {
 			const dataServer	= new RedisDataServer();
 			await dataServer.set( key, '123' );
 
@@ -369,7 +369,7 @@ test({
 
 test({
 	message	: 'RedisDataServer.delete removes key and returns true but returns false if it does not exist or not string',
-	test	: async ( done )=>{
+	test	: async ( done ) => {
 		const dataServer	= new RedisDataServer({ persist: false });
 		const key			= `key${Math.random()}`;
 		const value			= { test: 'value' };
@@ -397,7 +397,7 @@ test({
 		[100, {}, false],
 		[100, [], false],
 	],
-	test	: async ( done, value, increment, expectedValue )=>{
+	test	: async ( done, value, increment, expectedValue ) => {
 		const dataServer	= new RedisDataServer({ persist: false });
 		const key			= `key${Math.random()}`;
 
@@ -433,7 +433,7 @@ test({
 		[100, {}, false],
 		[100, [], false],
 	],
-	test	: async ( done, value, decrement, expectedValue )=>{
+	test	: async ( done, value, decrement, expectedValue ) => {
 		const dataServer	= new RedisDataServer({ persist: false });
 		const key			= `key${Math.random()}`;
 
@@ -468,7 +468,7 @@ test({
 		[{}, 'value', 100, 'true'],
 		[false, 'value', 100, 'true'],
 	],
-	test			: async ( done, key, value, ttl, persist )=>{
+	test			: async ( done, key, value, ttl, persist ) => {
 		const dataServer	= new RedisDataServer();
 
 		assert.equal( await dataServer.set( key, value, ttl, persist ), null );
@@ -479,7 +479,7 @@ test({
 
 test({
 	message			: 'RedisDataServer.lock locks data correctly',
-	test			: async ( done )=>{
+	test			: async ( done ) => {
 		const dataServer	= new RedisDataServer();
 
 		await dataServer.unlock( 'key' );
@@ -496,9 +496,9 @@ test({
 
 test({
 	message			: 'RedisDataServer.lock locks data correctly with double unlock',
-	test			: ( done )=>{
+	test			: ( done ) => {
 
-		setTimeout( async ()=>{
+		setTimeout( async () => {
 			const dataServer	= new RedisDataServer();
 
 			await dataServer.unlock( 'key' );
@@ -519,9 +519,9 @@ test({
 
 test({
 	message			: 'RedisDataServer.unlock always returns true',
-	test			: ( done )=>{
+	test			: ( done ) => {
 
-		setTimeout( async ()=>{
+		setTimeout( async () => {
 			const dataServer	= new RedisDataServer();
 
 			assert.equal( await dataServer.unlock( 'key' ), true );
@@ -538,16 +538,16 @@ test({
 
 test({
 	message			: 'RedisDataServer.lock acquires only one lock',
-	test			: ( done )=>{
+	test			: ( done ) => {
 
-		setTimeout( async ()=>{
+		setTimeout( async () => {
 			const dataServer	= new RedisDataServer();
 			const promises		= [];
 
 			for ( let i = 0; i < 10000; i ++ )
 				promises.push( dataServer.lock( 'key' ) );
 
-			Promise.all( promises ).then( async( locks )=>{
+			Promise.all( promises ).then( async( locks ) => {
 				let acquiredLocks	= 0;
 				for ( const lock of locks )
 				{
@@ -567,8 +567,8 @@ test({
 
 test({
 	message			: 'RedisDataServer.lockBurst acquires another lock with burst of locks',
-	test			: ( done )=>{
-		setTimeout( async ()=>{
+	test			: ( done ) => {
+		setTimeout( async () => {
 			const dataServer	= new RedisDataServer();
 			const promises		= [];
 			const key			= `key${Math.random()}lockBurst`;
@@ -581,7 +581,7 @@ test({
 				promises.push( dataServer.lock( key ) );
 			}
 
-			Promise.all( promises ).then( async( locks )=>{
+			Promise.all( promises ).then( async( locks ) => {
 				let acquiredLocks	= 0;
 				for ( const lock of locks )
 				{
@@ -599,7 +599,7 @@ test({
 
 test({
 	message	: 'RedisDataServer.testWithServerRateLimits',
-	test	: async ( done )=>{
+	test	: async ( done ) => {
 		const dataStore	= new RedisDataServer();
 
 		const appOne	= new Server();
@@ -611,11 +611,11 @@ test({
 		appOne.apply( new RateLimitsPlugin( 'rate_limits' ), { fileLocation, dataStore, useFile: true } );
 		appTwo.apply( new RateLimitsPlugin( 'rate_limits' ), { fileLocation, dataStore, useFile: true } );
 
-		appOne.get( `/${name}`, async ( event )=>{
+		appOne.get( `/${name}`, async ( event ) => {
 			event.send( name );
 		});
 
-		appTwo.get( `/${name}`, ( event )=>{
+		appTwo.get( `/${name}`, ( event ) => {
 			event.send( name );
 		});
 
@@ -623,10 +623,10 @@ test({
 		appTwo.listen( 3361 );
 
 
-		setTimeout(()=>{
-			sendServerRequest( `/${name}`, 'GET', 200, '', {}, 3360 ).then( async ( response )=>{
+		setTimeout(() => {
+			sendServerRequest( `/${name}`, 'GET', 200, '', {}, 3360 ).then( async ( response ) => {
 				return sendServerRequest( `/${name}`, 'GET', 429, '', {}, 3361, JSON.stringify( { error: 'Too many requests' } ) );
-			}).then(()=>{
+			}).then(() => {
 				done();
 			}).catch( done );
 		}, 100 );
@@ -635,7 +635,7 @@ test({
 
 test({
 	message	: 'RedisDataServer.testWithServerRateLimitsPermissive',
-	test	: ( done )=>{
+	test	: ( done ) => {
 		const name			= 'testErRateLimitsWithPermissiveLimiting';
 		const fileLocation	= path.join( __dirname, './fixture/rate_limits.json' );
 		let called			= 0;
@@ -643,7 +643,7 @@ test({
 		if ( ! app.hasPlugin( app.er_rate_limits ) )
 			app.apply( app.er_rate_limits, { fileLocation, useFile: true } );
 
-		app.get( `/${name}`, ( event )=>{
+		app.get( `/${name}`, ( event ) => {
 			called ++;
 
 			if ( called > 1 )
@@ -658,9 +658,9 @@ test({
 			event.send( name );
 		} );
 
-		sendServerRequest( `/${name}` ).then(( response )=>{
+		sendServerRequest( `/${name}` ).then(( response ) => {
 			return sendServerRequest( `/${name}` );
-		}).then(( response )=>{
+		}).then(( response ) => {
 			assert.equal( response.body.toString(), name );
 			done();
 		}).catch( done );
@@ -669,21 +669,21 @@ test({
 
 test({
 	message	: 'RedisDataServer.testWithServerRateLimitsPermissiveRefills',
-	test	: ( done )=>{
+	test	: ( done ) => {
 		const name			= 'testErRateLimitsWithPermissiveLimitingRefills';
 		const fileLocation	= path.join( __dirname, './fixture/rate_limits.json' );
 
 		if ( ! app.hasPlugin( app.er_rate_limits ) )
 			app.apply( app.er_rate_limits, { fileLocation, useFile: true } );
 
-		app.get( `/${name}`, ( event )=>{
+		app.get( `/${name}`, ( event ) => {
 			assert.equal( event.rateLimited, false );
 			event.send( name );
 		} );
 
-		sendServerRequest( `/${name}` ).then(( response )=>{
-			setTimeout(()=>{
-				sendServerRequest( `/${name}` ).then(( response )=>{
+		sendServerRequest( `/${name}` ).then(( response ) => {
+			setTimeout(() => {
+				sendServerRequest( `/${name}` ).then(( response ) => {
 					assert.equal( response.body.toString(), name );
 					done();
 				}).catch( done )
@@ -694,7 +694,7 @@ test({
 
 test({
 	message	: 'RedisDataServer.testWithServerRateLimitsConnectionDelay',
-	test	: ( done )=>{
+	test	: ( done ) => {
 		const name			= 'testErRateLimitsWithConnectionDelayPolicy';
 		const fileLocation	= path.join( __dirname, './fixture/rate_limits.json' );
 		const now			= Math.floor( new Date().getTime() / 1000 );
@@ -702,13 +702,13 @@ test({
 		if ( ! app.hasPlugin( app.er_rate_limits ) )
 			app.apply( app.er_rate_limits, { fileLocation, useFile: true } );
 
-		app.get( `/${name}`, ( event )=>{
+		app.get( `/${name}`, ( event ) => {
 			event.send( name );
 		} );
 
-		sendServerRequest( `/${name}` ).then(( response )=>{
+		sendServerRequest( `/${name}` ).then(( response ) => {
 			return sendServerRequest( `/${name}` );
-		}).then(( response )=>{
+		}).then(( response ) => {
 			assert.equal( response.body.toString(), name );
 			assert.equal( ( Math.floor( new Date().getTime() / 1000 ) - now ) >= 2, true );
 
@@ -719,20 +719,20 @@ test({
 
 test({
 	message	: 'RedisDataServer.testWithServerRateLimitsStrict',
-	test	: ( done )=>{
+	test	: ( done ) => {
 		const name			= 'testErRateLimitsWithStrictPolicy';
 		const fileLocation	= path.join( __dirname, './fixture/rate_limits.json' );
 
 		if ( ! app.hasPlugin( app.er_rate_limits ) )
 			app.apply( app.er_rate_limits, { fileLocation, useFile: true } );
 
-		app.get( `/${name}`, ( event )=>{
+		app.get( `/${name}`, ( event ) => {
 			event.send( name );
 		} );
 
-		sendServerRequest( `/${name}` ).then(( response )=>{
+		sendServerRequest( `/${name}` ).then(( response ) => {
 			return sendServerRequest( `/${name}`, 'GET', 429 );
-		}).then(( response )=>{
+		}).then(( response ) => {
 			assert.equal( response.body.toString(), JSON.stringify( { error: 'Too many requests' } ) );
 			done();
 		}).catch( done );
@@ -741,7 +741,7 @@ test({
 
 test({
 	message	: 'RedisDataServer.testWithServerRateLimitsStrictSTRESS',
-	test	: ( done )=>{
+	test	: ( done ) => {
 		// This test runs locally easily, but does not work well in the travis env
 		const name			= 'testErRateLimitsWithStrictPolicyStress';
 		const fileLocation	= path.join( __dirname, './fixture/rate_limits.json' );
@@ -749,7 +749,7 @@ test({
 		if ( ! app.hasPlugin( app.er_rate_limits ) )
 			app.apply( app.er_rate_limits, { fileLocation, useFile: true } );
 
-		app.get( `/${name}`, ( event )=>{
+		app.get( `/${name}`, ( event ) => {
 			event.send( name );
 		} );
 
@@ -760,13 +760,13 @@ test({
 			promises.push( sendServerRequest( `/${name}` ) );
 		}
 
-		setTimeout(()=>{
+		setTimeout(() => {
 			for ( let i = 0; i < 50; i ++ )
 			{
 				promises.push( sendServerRequest( `/${name}` ) );
 			}
 
-			Promise.all( promises).then(()=>{
+			Promise.all( promises).then(() => {
 				done();
 			}).catch( done );
 		}, 2100 );
@@ -775,20 +775,20 @@ test({
 
 test({
 	message	: 'RedisDataServer.testWithServerRateLimitsStrictSpecifiedMethodMatches',
-	test	: ( done )=>{
+	test	: ( done ) => {
 		const name			= 'testErRateLimitsWithStrictPolicyWithSpecifiedMethods';
 		const fileLocation	= path.join( __dirname, './fixture/rate_limits.json' );
 
 		if ( ! app.hasPlugin( app.er_rate_limits ) )
 			app.apply( app.er_rate_limits, { fileLocation, useFile: true } );
 
-		app.get( `/${name}`, ( event )=>{
+		app.get( `/${name}`, ( event ) => {
 			event.send( name );
 		} );
 
-		sendServerRequest( `/${name}` ).then(( response )=>{
+		sendServerRequest( `/${name}` ).then(( response ) => {
 			return sendServerRequest( `/${name}`, 'GET', 429 );
-		}).then(( response )=>{
+		}).then(( response ) => {
 			assert.equal( response.body.toString(), JSON.stringify( { error: 'Too many requests' } ) );
 			done();
 		}).catch( done );
@@ -797,20 +797,20 @@ test({
 
 test({
 	message	: 'RedisDataServer.testWithServerRateLimitsStrictSpecifiedMultipleMethodsMatch',
-	test	: ( done )=>{
+	test	: ( done ) => {
 		const name			= 'testErRateLimitsWithStrictPolicyWithMultipleSpecifiedMethods';
 		const fileLocation	= path.join( __dirname, './fixture/rate_limits.json' );
 
 		if ( ! app.hasPlugin( app.er_rate_limits ) )
 			app.apply( app.er_rate_limits, { fileLocation, useFile: true } );
 
-		app.get( `/${name}`, ( event )=>{
+		app.get( `/${name}`, ( event ) => {
 			event.send( name );
 		} );
 
-		sendServerRequest( `/${name}` ).then(( response )=>{
+		sendServerRequest( `/${name}` ).then(( response ) => {
 			return sendServerRequest( `/${name}`, 'GET', 429 );
-		}).then(( response )=>{
+		}).then(( response ) => {
 			assert.equal( response.body.toString(), JSON.stringify( { error: 'Too many requests' } ) );
 			done();
 		}).catch( done );
@@ -819,20 +819,20 @@ test({
 
 test({
 	message	: 'RedisDataServer.testWithServerRateLimitsStrictSpecifiedMethodDoesNotMatch',
-	test	: ( done )=>{
+	test	: ( done ) => {
 		const name			= 'testErRateLimitsWithStrictPolicyWithSpecifiedMethodsThatDoNotMatch';
 		const fileLocation	= path.join( __dirname, './fixture/rate_limits.json' );
 
 		if ( ! app.hasPlugin( app.er_rate_limits ) )
 			app.apply( app.er_rate_limits, { fileLocation, useFile: true } );
 
-		app.get( `/${name}`, ( event )=>{
+		app.get( `/${name}`, ( event ) => {
 			event.send( name );
 		} );
 
-		sendServerRequest( `/${name}` ).then(( response )=>{
+		sendServerRequest( `/${name}` ).then(( response ) => {
 			return sendServerRequest( `/${name}` );
-		}).then(( response )=>{
+		}).then(( response ) => {
 			assert.equal( response.body.toString(), name );
 			done();
 		}).catch( done );
@@ -841,7 +841,7 @@ test({
 
 test({
 	message	: 'RedisDataServer.testWithServerRateLimitsStopPropagation',
-	test	: ( done )=>{
+	test	: ( done ) => {
 		const name			= 'testErRateLimitsWithPropagation';
 		const fileLocation	= path.join( __dirname, './fixture/rate_limits.json' );
 		let called			= 0;
@@ -849,7 +849,7 @@ test({
 		if ( ! app.hasPlugin( app.er_rate_limits ) )
 			app.apply( app.er_rate_limits, { fileLocation, useFile: true } );
 
-		app.get( `/${name}`, ( event )=>{
+		app.get( `/${name}`, ( event ) => {
 			called ++;
 
 			if ( called > 1 )
@@ -864,9 +864,9 @@ test({
 			event.send( name );
 		} );
 
-		sendServerRequest( `/${name}` ).then(( response )=>{
+		sendServerRequest( `/${name}` ).then(( response ) => {
 			return sendServerRequest( `/${name}`, 'GET', 200 );
-		}).then(( response )=>{
+		}).then(( response ) => {
 			assert.equal( response.body.toString(), name );
 			done();
 		}).catch( done );
@@ -875,20 +875,20 @@ test({
 
 test({
 	message	: 'RedisDataServer.testWithServerRateLimitsMultipleRules',
-	test	: ( done )=>{
+	test	: ( done ) => {
 		const name			= 'testErRateLimitsWithMultipleRules';
 		const fileLocation	= path.join( __dirname, './fixture/rate_limits.json' );
 
 		if ( ! app.hasPlugin( app.er_rate_limits ) )
 			app.apply( app.er_rate_limits, { fileLocation, useFile: true } );
 
-		app.get( `/${name}`, ( event )=>{
+		app.get( `/${name}`, ( event ) => {
 			event.send( name );
 		} );
 
-		sendServerRequest( `/${name}` ).then(( response )=>{
+		sendServerRequest( `/${name}` ).then(( response ) => {
 			return sendServerRequest( `/${name}`, 'GET', 429 );
-		}).then(( response )=>{
+		}).then(( response ) => {
 			assert.equal( response.body.toString(), JSON.stringify( { error: 'Too many requests' } ) );
 			done();
 		}).catch( done );
@@ -897,20 +897,20 @@ test({
 
 test({
 	message	: 'RedisDataServer.testWithServerRateLimitsStrictOverridesConenctionDelay',
-	test	: ( done )=>{
+	test	: ( done ) => {
 		const name			= 'testErRateLimitsStrictOverridesConnectionDelayPolicy';
 		const fileLocation	= path.join( __dirname, './fixture/rate_limits.json' );
 
 		if ( ! app.hasPlugin( app.er_rate_limits ) )
 			app.apply( app.er_rate_limits, { fileLocation, useFile: true } );
 
-		app.get( `/${name}`, ( event )=>{
+		app.get( `/${name}`, ( event ) => {
 			event.send( name );
 		} );
 
-		sendServerRequest( `/${name}` ).then(( response )=>{
+		sendServerRequest( `/${name}` ).then(( response ) => {
 			return sendServerRequest( `/${name}`, 'GET', 429 );
-		}).then(( response )=>{
+		}).then(( response ) => {
 			assert.equal( response.body.toString(), JSON.stringify( { error: 'Too many requests' } ) );
 			done();
 		}).catch( done );
@@ -919,20 +919,20 @@ test({
 
 test({
 	message	: 'RedisDataServer.testWithServerRateLimitsConnectionOverridesPermissive',
-	test	: ( done )=>{
+	test	: ( done ) => {
 		const name			= 'testErRateLimitsConnectionDelayOverridesPermissivePolicy';
 		const fileLocation	= path.join( __dirname, './fixture/rate_limits.json' );
 
 		if ( ! app.hasPlugin( app.er_rate_limits ) )
 			app.apply( app.er_rate_limits, { fileLocation, useFile: true } );
 
-		app.get( `/${name}`, ( event )=>{
+		app.get( `/${name}`, ( event ) => {
 			event.send( name );
 		} );
 
-		sendServerRequest( `/${name}` ).then(( response )=>{
+		sendServerRequest( `/${name}` ).then(( response ) => {
 			return sendServerRequest( `/${name}` );
-		}).then(( response )=>{
+		}).then(( response ) => {
 			assert.equal( response.body.toString(), name );
 
 			done();
@@ -942,20 +942,20 @@ test({
 
 test({
 	message	: 'RedisDataServer.testWithServerRateLimitsConnectionReturns429IfNoMoreRetries',
-	test	: ( done )=>{
+	test	: ( done ) => {
 		const name			= 'testErRateLimitsConnectionDelayReturns429IfNoMoreRetries';
 		const fileLocation	= path.join( __dirname, './fixture/rate_limits.json' );
 
 		if ( ! app.hasPlugin( app.er_rate_limits ) )
 			app.apply( app.er_rate_limits, { fileLocation, useFile: true } );
 
-		app.get( `/${name}`, ( event )=>{
+		app.get( `/${name}`, ( event ) => {
 			event.send( name );
 		} );
 
-		sendServerRequest( `/${name}` ).then(( response )=>{
+		sendServerRequest( `/${name}` ).then(( response ) => {
 			return sendServerRequest( `/${name}`, 'GET', 429 );
-		}).then(( response )=>{
+		}).then(( response ) => {
 			assert.equal( response.body.toString(), JSON.stringify( { error: 'Too many requests' } ) );
 			done();
 		}).catch( done );
@@ -964,21 +964,21 @@ test({
 
 test({
 	message	: 'RedisDataServer.testWithServerRateLimitsIpLimit',
-	test	: ( done )=>{
+	test	: ( done ) => {
 		const name			= 'testErRateLimitsWithStrictPolicyWithIpLimit';
 		const fileLocation	= path.join( __dirname, './fixture/rate_limits.json' );
 
 		if ( ! app.hasPlugin( app.er_rate_limits ) )
 			app.apply( app.er_rate_limits, { fileLocation, useFile: true } );
 
-		app.get( `/${name}`, ( event )=>{
+		app.get( `/${name}`, ( event ) => {
 			event.send( name );
 		} );
 
-		setTimeout(()=>{
-			sendServerRequest( `/${name}` ).then(( response )=>{
+		setTimeout(() => {
+			sendServerRequest( `/${name}` ).then(( response ) => {
 				return sendServerRequest( `/${name}`, 'GET', 429 );
-			}).then(( response )=>{
+			}).then(( response ) => {
 				assert.equal( response.body.toString(), JSON.stringify( { error: 'Too many requests' } ) );
 				done();
 			}).catch( done );
@@ -988,7 +988,7 @@ test({
 
 test({
 	message	: 'RedisDataServer.testWithServerResponseCache',
-	test	: ( done )=>{
+	test	: ( done ) => {
 		const name	= 'testErResponseCacheCaches';
 		let i		= 0;
 
@@ -998,7 +998,7 @@ test({
 			app.apply( app.er_response_cache );
 		}
 
-		app.get( `/${name}`, 'cache.request', ( event )=>{
+		app.get( `/${name}`, 'cache.request', ( event ) => {
 			if ( i === 0 )
 			{
 				i ++;
@@ -1008,11 +1008,11 @@ test({
 			event.sendError( 'ERROR', 501 );
 		});
 
-		sendServerRequest( `/${name}` ).then(( response )=>{
+		sendServerRequest( `/${name}` ).then(( response ) => {
 			assert.equal( response.body.toString(), name );
 
 			return sendServerRequest( `/${name}` );
-		}).then(( response )=>{
+		}).then(( response ) => {
 			assert.equal( response.body.toString(), name );
 
 			done();
@@ -1022,7 +1022,7 @@ test({
 
 test({
 	message	: 'RedisDataServer.testWithServerCacheDoesNotCacheIfNotNeeded',
-	test	: ( done )=>{
+	test	: ( done ) => {
 		const name	= 'testErResponseCacheDoesNotCacheEverything';
 		let i		= 0;
 
@@ -1032,7 +1032,7 @@ test({
 			app.apply( app.er_response_cache );
 		}
 
-		app.get( `/${name}`, ( event )=>{
+		app.get( `/${name}`, ( event ) => {
 			if ( i === 0 )
 			{
 				i ++;
@@ -1042,11 +1042,11 @@ test({
 			event.sendError( 'ERROR', 501 );
 		} );
 
-		sendServerRequest( `/${name}` ).then(( response )=>{
+		sendServerRequest( `/${name}` ).then(( response ) => {
 			assert.equal( response.body.toString(), name );
 
 			return sendServerRequest( `/${name}`, 'GET', 501 );
-		}).then(( response )=>{
+		}).then(( response ) => {
 			assert.equal( response.body.toString(), JSON.stringify( { error: 'ERROR' } ) );
 
 			done();
@@ -1056,7 +1056,7 @@ test({
 
 test({
 	message	: 'RedisDataServer.testWithServerCacheDoesNotCacheRaw',
-	test	: ( done )=>{
+	test	: ( done ) => {
 		const name	= 'testErResponseCacheDoesNotCacheRaw';
 		let i		= 0;
 
@@ -1066,7 +1066,7 @@ test({
 			app.apply( app.er_response_cache );
 		}
 
-		app.get( `/${name}`, ( event )=>{
+		app.get( `/${name}`, ( event ) => {
 			if ( i === 0 )
 			{
 				i ++;
@@ -1076,11 +1076,11 @@ test({
 			event.sendError( 'ERROR', 501 );
 		} );
 
-		sendServerRequest( `/${name}` ).then(( response )=>{
+		sendServerRequest( `/${name}` ).then(( response ) => {
 			assert.equal( response.body.toString(), name );
 
 			return sendServerRequest( `/${name}`, 'GET', 501 );
-		}).then(( response )=>{
+		}).then(( response ) => {
 			assert.equal( response.body.toString(), JSON.stringify( { error: 'ERROR' } ) );
 
 			done();
@@ -1091,11 +1091,11 @@ test({
 
 test({
 	message	: 'RedisDataServer.testWithServerSession',
-	test	: ( done )=>{
+	test	: ( done ) => {
 		const name		= 'testErSession';
 		const appTwo	= new Server();
 
-		assert.throws(()=>{
+		assert.throws(() => {
 			const appOne	= new Server();
 			appOne.apply( appOne.er_session );
 		});
@@ -1103,17 +1103,17 @@ test({
 		appTwo.apply( appTwo.er_data_server, { dataServer } );
 		appTwo.apply( appTwo.er_session );
 
-		appTwo.get( `/${name}`, ( event )=>{
+		appTwo.get( `/${name}`, ( event ) => {
 			event.initSession( event.next ).catch( event.next );
 		} );
 
-		appTwo.get( `/${name}`, async ( event )=>{
+		appTwo.get( `/${name}`, async ( event ) => {
 			assert.equal( event.session instanceof Session, true );
 			const session	= event.session;
 
 			if ( session.has( 'authenticated' ) === false )
 			{
-				assert.throws(()=>{
+				assert.throws(() => {
 					session.get( 'authenticated' );
 				});
 
@@ -1128,8 +1128,8 @@ test({
 			event.send( name );
 		} );
 
-		appTwo.listen( 3390, ()=>{
-			sendServerRequest( `/${name}`, 'GET', 200, '', {}, 3390 ).then(( response )=>{
+		appTwo.listen( 3390, () => {
+			sendServerRequest( `/${name}`, 'GET', 200, '', {}, 3390 ).then(( response ) => {
 				assert.equal( response.body.toString(), name );
 				assert.equal( typeof response.headers['set-cookie'] !== 'undefined', true );
 
@@ -1146,7 +1146,7 @@ test({
 				const headers	= { cookie: `sid=${cookies.sid}`};
 
 				return sendServerRequest( `/${name}`, 'GET', 200, '', headers, 3390 );
-			}).then(( response )=>{
+			}).then(( response ) => {
 				assert.equal( response.body.toString(), name );
 				assert.equal( typeof response.headers.authenticated !== 'undefined', true );
 				assert.equal( response.headers.authenticated, 1 );
@@ -1154,7 +1154,7 @@ test({
 				const headers	= { cookie: `sid=wrong`};
 
 				return sendServerRequest( `/${name}`, 'GET', 200, '', headers, 3390 );
-			}).then(( response )=>{
+			}).then(( response ) => {
 				assert.equal( response.body.toString(), name );
 				assert.equal( typeof response.headers.authenticated === 'undefined', true );
 
@@ -1166,12 +1166,12 @@ test({
 
 test({
 	message	: 'RedisDataServer.with.custom.options',
-	test	: ( done )=>{
+	test	: ( done ) => {
 		const dataServer	= new RedisDataServer( { clientSettings: {}, ttl: -1 } );
 
 		dataServer.stop();
 
-		setTimeout(()=>{
+		setTimeout(() => {
 			done();
 		}, 50 );
 	}
@@ -1179,12 +1179,12 @@ test({
 
 test({
 	message	: 'RedisDataServer.with.ttl.-1',
-	test	: ( done )=>{
+	test	: ( done ) => {
 		const dataServer	= new RedisDataServer();
 
 		dataServer.stop();
 
-		setTimeout(()=>{
+		setTimeout(() => {
 			done();
 		}, 50 );
 	}
@@ -1192,18 +1192,18 @@ test({
 
 test({
 	message	: 'RedisDataServer._getTtl',
-	test	: ( done )=>{
+	test	: ( done ) => {
 		const dataServer	= new RedisDataServer();
 
 		dataServer.stop();
 
-		setTimeout(()=>{
+		setTimeout(() => {
 			assert.deepStrictEqual( dataServer._getTtl(), 2147483647 );
 			done();
 		}, 50 );
 	}
 });
 
-app.listen( 3333, async()=>{
+app.listen( 3333, async() => {
 	runAllTests();
 });
