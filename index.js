@@ -15,7 +15,7 @@ client.on( 'error', ( error ) => {
 
 // MAX TTL 9223372036854775295
 
-client.set( 'key' , 'value', 'EX', 9223372036854775295, function () {
+client.set( 'key' , 'value', 'EX', 1000, function () {
 	console.log( arguments );
 });
 
@@ -28,4 +28,9 @@ setTimeout(()=>{
 	client.get( 'key', function(){
 		console.log( arguments );
 	} );
-}, 2000)
+}, 2000 )
+
+
+client.expire( 'key', 1, function () {
+console.log( arguments );
+});
