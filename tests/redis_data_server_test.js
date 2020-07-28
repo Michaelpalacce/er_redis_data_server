@@ -18,7 +18,9 @@ Loggur.loggers	= {};
 
 app.apply( getPlugin() );
 
-dataServer.server.flushall();
+dataServer.server.flushall( function () {
+	app.Loggur.log( arguments );
+});
 
 /**
  * @brief	Sends a request to the server and returns a Promise
