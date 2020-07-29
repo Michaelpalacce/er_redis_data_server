@@ -104,12 +104,12 @@ class RedisDataServer extends DataServer
 		return new Promise(( resolve, reject ) => {
 			this.server.incrby( key, value, ( error, result ) => {
 					if ( error )
-						resolve( false );
+						resolve( null );
 
 					if ( result === undefined )
-						resolve( false );
+						resolve( null );
 
-					resolve( true );
+					resolve( result );
 				}
 			);
 		});
@@ -123,12 +123,12 @@ class RedisDataServer extends DataServer
 		return new Promise(( resolve, reject ) => {
 			this.server.decrby( key, value, ( error, result ) => {
 				if ( error )
-					resolve( false );
+					resolve( null );
 
 				if ( result === undefined )
-					resolve( false );
+					resolve( null );
 
-				resolve( true );
+				resolve( result );
 				}
 			);
 		});

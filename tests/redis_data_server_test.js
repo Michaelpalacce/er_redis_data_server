@@ -386,16 +386,16 @@ test({
 test({
 	message	: 'RedisDataServer.increment.increments.data',
 	dataProvider	: [
-		[100, 100, true],
-		[0, 100, true],
-		[-1, 100, true],
-		['string', 100, false],
+		[100, 100, 200],
+		[0, 100, 100],
+		[-1, 100, 99],
+		['string', 100, null],
 		[[], 100, null],
 		[{}, 100, null],
-		[100, null, false],
-		[100, 'string', false],
-		[100, {}, false],
-		[100, [], false],
+		[100, null, null],
+		[100, 'string', null],
+		[100, {}, null],
+		[100, [], null],
 	],
 	test	: async ( done, value, increment, expectedValue ) => {
 		const dataServer	= new RedisDataServer({ persist: false });
@@ -406,7 +406,7 @@ test({
 
 
 		if ( expectedValue === null )
-			return done( ! ( false === result ) );
+			return done( ! ( null === result ) );
 
 		if ( result === null )
 			return done( `Result was null but expected: ${expectedValue}` );
@@ -420,18 +420,18 @@ test({
 test({
 	message	: 'RedisDataServer.decrement decrement data',
 	dataProvider	: [
-		[100, 100, true],
-		[0, 100, true],
-		[1, 100, true],
-		[100, 99, true],
-		[100, 50, true],
-		['string', true, false],
-		[[], 100, false],
-		[{}, 100, false],
-		[100, null, false],
-		[100, 'string', false],
-		[100, {}, false],
-		[100, [], false],
+		[100, 100, 0],
+		[0, 100, -100],
+		[1, 100, -99],
+		[100, 99, 1],
+		[100, 50, 50],
+		['string', true, null],
+		[[], 100, null],
+		[{}, 100, null],
+		[100, null, null],
+		[100, 'string', null],
+		[100, {}, null],
+		[100, [], null],
 	],
 	test	: async ( done, value, decrement, expectedValue ) => {
 		const dataServer	= new RedisDataServer({ persist: false });
@@ -442,7 +442,7 @@ test({
 		const result	= await dataServer.decrement( key, decrement ).catch( done );
 
 		if ( expectedValue === null )
-			return done( ! ( false === result ) );
+			return done( ! ( null === result ) );
 
 		if ( result === null )
 			return done( `Result was null but expected: ${expectedValue}` );

@@ -9,6 +9,7 @@ Plugin for event_request that implements a redis data server
 - Redis does not preserve value types ( numbers will not be numbers but stings after they are returned )
 - Redis does not natively support objects. Any object you are trying to add will be JSON encoded and then JSON decoded when getting it
 - The Redis Data Server has a MAX_TTL of 2147483647, that will be enforced if a bigger number is given
+- There were issues with setting a ttl on locks, so currently the locks have no ttl set.
 
 # Use:
 ~~~javascript
